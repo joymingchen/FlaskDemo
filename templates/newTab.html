@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>new tab</title>
+    <link rel="shortcut icon" href="#"/>
+</head>
+<script>
+    //层的id
+    var loadingDivId = "loading_div";
+
+    //创建或显示loading层
+    function showLoadingDiv() {
+        var div = document.getElementById(loadingDivId);
+        if (!div) {
+            div = document.createElement("DIV");
+            with (div) {
+                id = loadingDivId;
+                //如果能搞个类似FF转动的小图片就更ok了。
+                innerHTML = "<br/><br/><br/><br/>Loading";
+                style.position = "absolute";
+                style.zIndex = "9999";
+                style.backgroundColor = "#7B68EE";
+                style.width = "210px";
+                style.height = "200px";
+                style.top = "2";
+                style.left = "5";
+                style.textAlign = "center";
+                //DIV透明度
+                style.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity=50)";
+            }
+            document.body.appendChild(div);
+        }
+        div.style.display = "block";
+    }
+
+    //隐藏loading层
+    function hiddenLoadingDiv() {
+        var div = document.getElementById(loadingDivId);
+        if (div)
+            div.style.display = "none";
+    }
+</script>
+<body>
+<!--选项的头部-->
+<div id="tab-header">
+    <ul>
+        <li class="selected">新的页面</li>
+        <li>新的页面</li>
+        <li>新的页面</li>
+        <li>新的页面</li>
+        <li>新的页面</li>
+    </ul>
+</div>
+</body>
+</html>
+
+
+

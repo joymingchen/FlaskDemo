@@ -15,11 +15,8 @@ def new_tab():
 
 @app.route('/list', methods=['GET'])
 def get_special_pager_list():
-    g.header = request.headers
-    # print(g.header.get('Authorization'))
     if request.args is None:
         return {'error': 2, 'code': 200, 'msg': '缺少必要参数'}
-
     queryMode = ""
     tabId = 0
     content = "服务端的数据"
@@ -46,15 +43,11 @@ def change_tab():
     return render_template('tab.html', error=error)
 
 
-@app.route('/tab', methods=['POST', 'GET'])
+@app.route('/tab', methods=['GET'])
 def splash():
     error = None
-    if request.method == 'POST':
-        if request.form['username'] == 'cool':
-            return redirect(url_for('home', username=request.form['username']))
-        else:
-            error = 'Invalid username/password'
-    return render_template('tab.html', error=error)
+    if request.method == 'GET':
+        return render_template('tab.html', error=error)
 
 
 @app.route('/login', methods=['POST', 'GET'])

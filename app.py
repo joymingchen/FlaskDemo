@@ -170,7 +170,7 @@ def get_special_pager_list():
                     if (str(item["id"]).find(keyword) != -1) or (str(item["username"]).find(keyword) != -1):
                         newData.append(item)
             tableList = newData
-        res = make_response(jsonify({'count': 10, 'code': 0, 'msg': '请求成功', 'data': tableList}))
+        res = make_response(jsonify({'count': len(tableList), 'code': 0, 'msg': '请求成功', 'list': tableList}))
         res.headers['Access-Control-Allow-Origin'] = '*'
         res.headers['Access-Control-Allow-Method'] = '*'
         res.headers['Access-Control-Allow-Headers'] = '*'

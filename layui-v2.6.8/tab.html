@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui-v2.6.8/layui/css/layui.css" media="all">
+</head>
+
+<body style="background:#f0f9fd;">
+
+<div class="menu">
+    <div class="layui-nav-title">菜单</div>
+    <div class="layui-tab">第一级</div>
+</div>
+<div id="content">
+
+</div>
+
+<script src="../layui-v2.6.8/layui/layui.js" charset="utf-8"></script>
+<script>
+    window.onload = function () {
+        document.getElementById("content").innerHTML
+            += "<div class=\"h2\"><span></span>第二级</div>";
+    }
+</script>
+</body>
+</html>

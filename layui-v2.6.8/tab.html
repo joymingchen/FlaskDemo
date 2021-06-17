@@ -11,6 +11,7 @@
 
 <body style="background:#f0f9fd;">
 
+<!--静态下拉菜单-->
 <div class="layui-panel">
     <ul class="layui-menu" id="docDemoMenu1">
         <li class="layui-menu-item-group layui-menu-item-down" lay-options="{type: 'group'}">
@@ -100,32 +101,26 @@
             <dd><a href="">电商平台</a></dd>
         </dl>
     </li>
-    <li class="layui-nav-item"><a href="">产品</a></li>
-    <li class="layui-nav-item"><a href="">大数据</a></li>
+    <li class="layui-nav-item"><a href="">刷新当前页面</a></li>
+    <li class="layui-nav-item"><a href="search.html">跳转表格页面</a></li>
+    <li class="layui-nav-item"><a href="" id="show-nav">展示侧边导航栏</a></li>
 </ul>
+
+<!--动态生成侧边导航的容器-->
+<div class="layui-side layui-bg-black" style="display: block" id="nav-menu">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree" lay-filter="nav" id="menus"></ul>
+    </div>
+</div>
+
 
 <script src="../layui-v2.6.8/layui/layui.js" charset="utf-8"></script>
 <script>
     //页面寻找控件的方法
     const $ = layui.$;
 
-    layui.use('element', function () {
-        var element = layui.element;
-
-        //一些事件触发
-        element.on('test', function (data) {
-            console.log(data);
-        });
-
-
-        element.tabAdd('test', {
-            title: '选项卡的标题'
-            , content: '<li class="layui-nav-item"><a href="">大数据</a></li>' //支持传入html
-            , id: '选项卡标题的lay-id属性值'
-        });
-
-    });
-
+    //下拉菜单的点击事件
     layui.use('dropdown', function () {
         var dropdown = layui.dropdown;
 
@@ -135,11 +130,95 @@
             console.log(options); //菜单列表的 lay-options 中的参数
 
             layer.open({
-                title: '在线调试'
+                title: 'easy bro'
                 , content: options.id.toString()
             });
 
         });
+    });
+
+    layui.use('element', function () {
+        var element = layui.element;
+
+        function getATab(obj) {
+            if (obj.children != null) {
+                //二级菜单
+                var bTab = "";
+                var children = obj.children
+                for (var i = 0; i < children.length; i++) {
+                    bTab += getBTab(children[i])
+                }
+                return "<li class=\"layui-nav-item\"><a href=\"javascript:;\" id=" + obj.id
+                    + ">" + obj.title + "</a>"
+                    + "<dl class=\"layui-nav-child\">"
+                    + bTab
+                    + "</dl>"
+                    + "</li>";
+            } else {
+                return "<li class=\"layui-nav-item\"><a href=\"javascript:;\" id=" + obj.id
+                    + ">" + obj.title + "</a></li>"
+            }
+        }
+
+        function getBTab(obj) {
+            if (obj.children != null) {
+                //二级菜单
+                var bTab = "";
+                var children = obj.children
+                for (var i = 0; i < children.length; i++) {
+                    bTab += "<dd><a href=\"javascript:;\" id=" + children[i].id
+                        + ">" + children[i].title + "</a></dd>"
+                }
+                return "<li class=\"layui-nav-item\"><a  href=\"javascript:;\" id=" + obj.id
+                    + ">"
+                    + obj.title
+                    + "</a><dl class=\"layui-nav-child\">" + bTab + "</dl></li>";
+            } else {
+                return "<li class=\"layui-nav-item\"><a  href=\"javascript:;\" id=" + obj.id
+                    + ">"
+                    + obj.title
+                    + "</a><dl class=\"layui-nav-child\"></dl></li>"
+            }
+        }
+
+        //动态菜单
+        layui.jquery.ajax({
+            url: "http://127.0.0.1:5000/menu",
+            method: 'GET',
+            success: function (res) {
+                console.log(res.data)
+                var html = "";
+                var data = res.data;
+                for (var i = 0; i < data.length; i++) {
+                    html += getATab(data[i]);
+                }
+                html += "<li class=\"layui-nav-item\"><a id = \"hide-nav\">隐藏侧边导航栏</a></li>"
+                layui.jquery("#menus").html(html);
+                layui.element.init(); //一定初始化一次
+            }
+        })
+
+        //菜单点击事件，其中 docDemoMenu1 对应的是菜单结构上的 id 指
+        element.on('nav(nav)', function (data) {
+            var othis = $(this); //当前菜单列表的 DOM 对象
+            console.log(data); //菜单列表的 lay-options 中的参数
+
+            if (data.context.id == "hide-nav") {
+                var ul = document.getElementById('nav-menu')
+                ul.style.display = "none"
+            } else {
+                layer.open({
+                    title: 'easy bro'
+                    , content: data.context.id
+                });
+            }
+        });
+
+        //展示侧边导航栏的点击事件
+        document.getElementById('show-nav').onclick = function () {
+            var ul = document.getElementById('nav-menu');
+            ul.style.display = "block";
+        }
     });
 </script>
 </body>

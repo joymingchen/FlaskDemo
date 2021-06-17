@@ -14,6 +14,7 @@ def new_tab():
     return render_template('newTab.html', error=error)
 
 
+# 获取列表数据
 @app.route('/list', methods=['GET', 'OPTIONS'])
 def get_special_pager_list():
     if request.method == 'GET':
@@ -176,6 +177,101 @@ def get_special_pager_list():
         res.headers['Access-Control-Allow-Headers'] = '*'
 
         print("请求返回参数   tableList: " + str(tableList))
+        return res
+
+
+# 获取列表数据
+@app.route('/menu', methods=['GET', 'OPTIONS'])
+def get_menu():
+    if request.method == 'GET':
+        if request.args is None:
+            return {'error': 2, 'code': 200, 'msg': '缺少必要参数'}
+        menu = [
+            {
+                "title": "首页",
+                "id": 1000,
+                "icon": " ",
+                "spread": True,
+                "href": ""
+            },
+            {
+                "title": "一级导航-1",
+                "id": 1001,
+                "icon": "fa-stop-circle",
+                "spread": True,
+                "href": "http://www.baidu.com",
+                "children": [
+                    {
+                        "title": "二级导航-21",
+                        "id": 2001,
+                        "icon": "",
+                        "href": "lala.html",
+                        "spread": True,
+                        "children": [
+                            {
+                                "title": "三级导航-3211",
+                                "id": 3001,
+                                "icon": " ",
+                                "href": "button.html"
+                            },
+                            {
+                                "title": "三级导航-3212",
+                                "id": 3002,
+                                "icon": " ",
+                                "href": "buttwswon.html"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "二级导航-22",
+                        "id": 2002,
+                        "icon": "",
+                        "href": "lala.html",
+                        "spread": True,
+                        "children": [
+                            {
+                                "title": "三级导航-3221",
+                                "id": 3021,
+                                "icon": " ",
+                                "href": "button.html"
+                            },
+                            {
+                                "title": "三级导航-3222",
+                                "id": 3022,
+                                "icon": " ",
+                                "href": "buttwswon.html"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "title": "一级导航-2",
+                "id": 1002,
+                "icon": "fa-stop-circle",
+                "spread": True,
+                "href": "http://www.baidu.com"
+            },
+            {
+                "title": "一级导航-3",
+                "id": 1003,
+                "icon": "fa-stop-circle",
+                "spread": True,
+                "href": "http://www.baidu.com"
+            },
+            {
+                "title": "一级导航-4",
+                "id": 1004,
+                "icon": "fa-stop-circle",
+                "spread": True,
+                "href": "http://www.baidu.com"
+            }
+        ]
+        res = make_response(jsonify({'count': len(menu), 'code': 0, 'msg': '请求成功', 'data': menu}))
+        res.headers['Access-Control-Allow-Origin'] = '*'
+        res.headers['Access-Control-Allow-Method'] = '*'
+        res.headers['Access-Control-Allow-Headers'] = '*'
+        print("请求返回参数   tableList: " + str(menu))
         return res
 
 

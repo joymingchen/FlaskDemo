@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>select-option onclick </title>
+    <script type="text/javascript">
+
+        function simOptionClick4IE() {
+            var evt = window.event;
+            var selectObj = evt ? evt.srcElement : null;
+            // IE Only
+            if (evt && selectObj && evt.offsetY && evt.button != 2
+                && (evt.offsetY > selectObj.offsetHeight || evt.offsetY < 0)) {
+
+                // 记录原先的选中项
+                var oldIdx = selectObj.selectedIndex;
+
+                setTimeout(function () {
+                    var option = selectObj.options[selectObj.selectedIndex];
+                    // 此时可以通过判断 oldIdx 是否等于 selectObj.selectedIndex
+                    // 来判断用户是不是点击了同一个选项,进而做不同的处理.
+                    showOptionValue(option)
+
+                }, 60);
+            }
+        }
+
+        function showOptionValue(opt, msg) {
+            var now = new Date();
+            var dt = (1900 + now.getYear()) + '-' + (now.getMonth() + 1) + '-' + now.getDate() +
+                ' ' + now.getHours() + ':' + now.getHours() + ':' + now.getSeconds() + '.' + now.getMilliseconds();
+            var resultZone = document.getElementById('reslut');
+            resultZone.style.margin = "10px";
+            resultZone.innerHTML = dt + " 时,点击了: " + (opt.text + ' = ' + opt.value);
+
+            var url = opt.value;
+            window.open(url);
+        }
+
+    </script>
+</head>
+
+<body>
+
+<select onclick="simOptionClick4IE()">
+    <!-- 下面的 onclick="showOptionValue( this )" 是为 ff 和 opera而准备 -->
+    <option value="http://www.baidu.com" onclick="showOptionValue( this )">百度</option>
+    <option value="http://www.taobao.com" onclick="showOptionValue( this )">淘宝</option>
+    <option value="3" onclick="showOptionValue( this )">ccccc</option>
+</select>
+
+<div id="reslut"></div>
+</body>
+</html>

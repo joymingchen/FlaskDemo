@@ -19,12 +19,10 @@
     <button class="layui-btn" data-type="reload" id="search_btn">搜索</button>
 </div>
 
-<br/>
-<div>男性</div>
-<table class="layui-hide" id="table_male" lay-filter="user"></table>
-<br/>
-<div>女性</div>
-<table class="layui-hide" id="table_female" lay-filter="user_female"></table>
+<!--list容器-->
+<div class="list-container" id="list-container">
+
+</div>
 
 <script src="../layui-v2.6.8/layui/layui.js" charset="utf-8"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述 JS 路径需要改成你本地的 -->
@@ -39,40 +37,143 @@
     //搜索按钮
     const searchBtn = document.getElementById('search_btn')
 
-    //表格行数
-    let columns = [];
-    //管理员展示的行数
-    const columns_admin = [
-        {checkbox: true, fixed: true}
-        , {field: 'id', title: 'ID', width: 80, sort: true, fixed: true}
-        , {field: 'username', title: '用户名', width: 80}
-        , {field: 'sex', title: '性别', width: 80, sort: true}
-        , {field: 'city', title: '城市', width: 80}
-        , {field: 'sign', title: '签名'}
-        , {field: 'experience', title: '积分', sort: true, width: 80}
-        , {field: 'score', title: '评分', sort: true, width: 80}
-        , {field: 'classify', title: '职业', width: 80}
-        , {field: 'wealth', title: '财富', sort: true, width: 135}
-    ]
-    //访客展示的行数
-    const columns_guest = [
-        {field: 'username', title: '用户名', width: 80}
-        , {field: 'sex', title: '性别', width: 80, sort: true}
-        , {field: 'city', title: '城市', width: 80}
-        , {field: 'sign', title: '签名'}
-        , {field: 'experience', title: '积分', sort: true, width: 80}
-        , {field: 'score', title: '评分', sort: true, width: 80}
-        , {field: 'classify', title: '职业', width: 80}
-        , {field: 'wealth', title: '财富', sort: true, width: 135}
-    ]
+
+    //动态表格html
+    var tableHtml = "";
+
+    //表格行数参数options
+    let columns = [
+        [{title: "标题", colspan: 10, align: 'center'},]
+        , [
+            {field: 'id', title: 'ID', width: 80, sort: true, fixed: false}
+            , {field: 'username', title: '用户名', width: 80}
+            , {field: 'sex', title: '性别', width: 80, sort: true}
+            , {field: 'city', title: '城市', width: 80}
+            , {field: 'sign', title: '签名'}
+            , {field: 'experience', title: '积分', sort: true, width: 80}
+            , {field: 'score', title: '评分', sort: true, width: 80}
+            , {field: 'classify', title: '职业', width: 80}
+            , {field: 'wealth', title: '财富', sort: true, width: 135}
+        ]];
+
+    //表格总数据
+    var totalList = [
+        {
+            "title": "男性",
+            "list": [
+                {
+                    "id": 10000,
+                    "username": "user-0",
+                    "sex": "男",
+                    "city": "城市-0",
+                    "sign": "签名-0",
+                    "experience": 255,
+                    "logins": 24,
+                    "wealth": 82830700,
+                    "classify": "作家",
+                    "score": 57
+                },
+                {
+                    "id": 10001,
+                    "username": "user-1",
+                    "sex": "男",
+                    "city": "城市-1",
+                    "sign": "签名-1",
+                    "experience": 884,
+                    "logins": 58,
+                    "wealth": 64928690,
+                    "classify": "词人",
+                    "score": 27
+                }
+            ]
+        },
+        {
+            "title": "女性",
+            "list": [
+                {
+                    "id": 10003,
+                    "username": "user-0",
+                    "sex": "女",
+                    "city": "城市-0",
+                    "sign": "签名-0",
+                    "experience": 255,
+                    "logins": 24,
+                    "wealth": 82830700,
+                    "classify": "作家",
+                    "score": 57
+                },
+                {
+                    "id": 10004,
+                    "username": "user-1",
+                    "sex": "女",
+                    "city": "城市-1",
+                    "sign": "签名-1",
+                    "experience": 884,
+                    "logins": 58,
+                    "wealth": 64928690,
+                    "classify": "词人",
+                    "score": 27
+                }
+            ]
+        },
+        {
+            "title": "lady-boy",
+            "list": [
+                {
+                    "id": 10003,
+                    "username": "user-0",
+                    "sex": "lady-boy",
+                    "city": "城市-0",
+                    "sign": "签名-0",
+                    "experience": 255,
+                    "logins": 24,
+                    "wealth": 82830700,
+                    "classify": "作家",
+                    "score": 57
+                },
+                {
+                    "id": 10004,
+                    "username": "user-1",
+                    "sex": "undefined",
+                    "city": "城市-1",
+                    "sign": "签名-1",
+                    "experience": 884,
+                    "logins": 58,
+                    "wealth": 64928690,
+                    "classify": "词人",
+                    "score": 27
+                }
+            ]
+        }
+    ];
+    //每个表格的elemId
+    var elemIdList = [];
+    //每个表格的id
+    var tableIdList = [];
+
+    for (var i = 0; i < totalList.length; i++) {
+        //首先添加table
+        var elemId = "table_" + i;
+        var tableId = "tableReload_" + i;
+        elemIdList.push(elemId);
+        tableIdList.push(tableId);
+
+        var currentTableHtml = " <table class=\"layui-hide\" id=\"" + elemId + "\" lay-filter=\"user_male\"></table> "
+        tableHtml += currentTableHtml;
+    }
+
+    //list的容器，动态添加table进去
+    document.getElementById("list-container").innerHTML = tableHtml;
 
 
     //表格初始化
     layui.use('table', function () {
-        columns = columns_admin
         //方法级渲染
-        tableRender()
+        for (var i = 0; i < totalList.length; i++) {
+            tableRender2("#" + elemIdList[i], tableIdList[i], columns, totalList[i])
+        }
     });
+
 
     //搜索按钮的点击事件
     searchBtn.onclick = function () {
@@ -90,105 +191,30 @@
 
     //搜索列表
     function searchList() {
-        if (inputBox.val() === '1') {
-            columns = columns_guest
-        } else {
-            columns = columns_admin
-        }
-        tableRender();
-        //执行重载
-        table.reload('testReloadMale', {
-            where: {
-                queryMode: 1,//0：精准搜索 1：模糊搜索，根据接口而定
-                keyword: inputBox.val(),
-            }
-        }, true);
 
-        //执行重载
-        table.reload('testReloadFeMale', {
-            where: {
-                queryMode: 1,//0：精准搜索 1：模糊搜索，根据接口而定
-                keyword: inputBox.val(),
-            }
-        }, true);
     }
 
     //表格渲染
-    function tableRender() {
+    function tableRender2(elemId, tableId, columns, item) {
         table.render({
-            elem: '#table_male'
-            , url: 'http://127.0.0.1:5000/list'
-            , method: 'GET'
-            , parseData: function (res) { //res 即为原始返回的数据
-
-                var maleList = []
-                for(var i =0;i<res.list.length;i++){
-                    console.log(res.list[i]);
-                    if (res.list[i]["sex"] === '男') {
-                        maleList.push(res.list[i])
-                    }
-                }
-
-                return {
-                    "code": res.code, //解析接口状态
-                    "msg": res.msg, //解析提示文本
-                    "count": maleList.length, //解析数据长度
-                    "data": maleList //解析数据列表
-                };
-            }
-            , done: function (res, curr, count) {
-                //如果是异步请求数据方式，res即为你接口返回的信息。
-                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                console.log(res);
-
-                //得到当前页码
-                console.log(curr);
-
-                //得到数据总量
-                console.log(count);
-            }
-            , cols: [columns]
-            , id: 'testReloadMale'
-            , page: true
-            , height: 310
-        });
-
-        table.render({
-            elem: '#table_female'
-            , url: 'http://127.0.0.1:5000/list'
-            , method: 'GET'
-            , parseData: function (res) { //res 即为原始返回的数据
-
-                var femaleList = []
-                for(var i =0;i<res.list.length;i++){
-                    console.log(res.list[i]);
-                    if (res.list[i]["sex"] === '女') {
-                        femaleList.push(res.list[i])
-                    }
-                }
-
-                return {
-                    "code": res.code, //解析接口状态
-                    "msg": res.msg, //解析提示文本
-                    "count": femaleList.length, //解析数据长度
-                    "data": femaleList //解析数据列表
-                };
-            }
-            , done: function (res, curr, count) {
-                //如果是异步请求数据方式，res即为你接口返回的信息。
-                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                console.log(res);
-
-                //得到当前页码
-                console.log(curr);
-
-                //得到数据总量
-                console.log(count);
-            }
-            , cols: [columns]
-            , id: 'testReloadFeMale'
-            , page: true
-            , height: 310
+            elem: elemId
+            , cols: [
+                [{title: item["title"], colspan: 10, align: 'center'},]
+                , [
+                    {field: 'id', title: 'ID', width: 80, sort: true, fixed: false}
+                    , {field: 'username', title: '用户名', width: 80}
+                    , {field: 'sex', title: '性别', width: 80, sort: true}
+                    , {field: 'city', title: '城市', width: 80}
+                    , {field: 'sign', title: '签名'}
+                    , {field: 'experience', title: '积分', sort: true, width: 80}
+                    , {field: 'score', title: '评分', sort: true, width: 80}
+                    , {field: 'classify', title: '职业', width: 80}
+                    , {field: 'wealth', title: '财富', sort: true, width: 100}
+                ]]
+            , id: tableId
+            , page: false
+            , height: 300
+            , data: item["list"]
         });
     }
 </script>

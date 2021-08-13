@@ -2,6 +2,25 @@
 import requests
 import base64
 
+from PIL import Image
+
+
+def iter_frames(im):
+    try:
+        i = 0
+        while 1:
+            im.seek(i)
+            imframe = im.copy()
+            if i == 0:
+                palette = imframe.getpalette()
+            else:
+                imframe.putpalette(palette)
+            yield imframe
+            i += 1
+    except EOFError:
+        pass
+
+
 '''
 通用文字识别（高精度版）
 '''
@@ -18,10 +37,27 @@ if response.status_code == 200:
 else:
     print(response.json()['error_description'])
 
-request_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic"
+# 通用文字识别
+common_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic"
+# 网络图片识别
+web_image_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/webimage"
+# 手写识别
+hand_write_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/handwriting"
+# 通用文字识别 标准版
+basic_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic"
+
+request_url = basic_url
 # 二进制方式打开图片文件
 # 本地图片的地址 自行修改
-local_path = 'D:\\PycharmProjects\\FlaskProjects\\test.webp'
+local_path = 'D:\\PycharmProjects\\FlaskProjects\\test1.gif'
+
+# 将gif图片转成PNG图片
+im = Image.open(local_path)
+
+for i, frame in enumerate(iter_frames(im)):
+    frame.save('image.png', **frame.info)
+
+local_path = 'D:\\PycharmProjects\\FlaskProjects\\image.png'
 f = open(local_path, 'rb')
 img = base64.b64encode(f.read())
 

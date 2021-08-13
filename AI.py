@@ -6,6 +6,10 @@ import pytesseract
 import numpy as np
 from PIL import Image
 
+'''
+通用文字识别（高精度版）
+'''
+
 
 def iter_frames(im):
     try:
@@ -23,16 +27,17 @@ def iter_frames(im):
         pass
 
 
-def recognize_text2(image):
+# 图片进行去噪处理
+def recognize_text(image):
     # 边缘保留滤波  去噪
     blur = cv.pyrMeanShiftFiltering(image, sp=8, sr=30)
     # cv.imshow('dst', blur)
     # 对比度加深
-    abs = cv.convertScaleAbs(blur, alpha=1.4, beta=0)
+    scale_abs = cv.convertScaleAbs(blur, alpha=1.4, beta=0)
     # cv.imshow('abs', abs)
 
     # 替换黄色
-    hsv = cv.cvtColor(abs, cv.COLOR_BGR2HSV)
+    hsv = cv.cvtColor(scale_abs, cv.COLOR_BGR2HSV)
     # 分别设置HSV颜色空间中，红色、黄色、蓝色、绿色的阈值
     lower_red = np.array([0, 43, 46])
     upper_red = np.array([10, 255, 255])
@@ -48,7 +53,7 @@ def recognize_text2(image):
     mask_blue = cv.inRange(hsv, lower_blue, upper_blue)
     mask_green = cv.inRange(hsv, lower_green, upper_green)
     mask_yellow = cv.inRange(hsv, lower_yellow, upper_yellow)
-    img_mask = np.copy(abs)
+    img_mask = np.copy(scale_abs)
 
     color_1 = [128, 9, 21]
     color_2 = [50, 14, 77]
@@ -93,21 +98,44 @@ def recognize_text2(image):
     # print(f'识别结果：{text}')
 
 
-'''
-通用文字识别（高精度版）
-'''
+# 获取百度AI的token
+def get_token(api_key, secret_key):
+    host = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=' + api_key + '&client_secret=' + secret_key
+    response = requests.get(host)
+    access_token = ''
+    if response.status_code == 200:
+        access_token = response.json()['access_token']
+        print(access_token)
+    else:
+        print(response.json()['error_description'])
+    return access_token
+
+
+def request_img(url, access_token, file_path):
+    f = open(file_path, 'rb')
+    img = base64.b64encode(f.read())
+
+    params = {"image": img}
+    request_url = url + "?access_token=" + access_token
+    headers = {'content-type': 'application/x-www-form-urlencoded'}
+
+    response = requests.post(request_url, data=params, headers=headers)
+    result_str = ''
+    if response.status_code == 200:
+        try:
+            words_result = response.json()['words_result']
+            print(words_result)
+            number_str = words_result[0]
+            result_str = number_str['words']
+        except KeyError:
+            print(response.json()['error_msg'])
+    return result_str
+
 
 # client_id 为官网获取的AK， client_secret 为官网获取的SK
 apiKey = "c04po10UzPyP0sgImVGlvsRo"
 secretKey = "ydQsGv9jZkvvkEE2GTFQdVZ29fWdy348"
-host = 'https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=' + apiKey + '&client_secret=' + secretKey
-response = requests.get(host)
-access_token = ''
-if response.status_code == 200:
-    access_token = response.json()['access_token']
-    print(response.json()['access_token'])
-else:
-    print(response.json()['error_description'])
+token = get_token(apiKey, secretKey)
 
 # 通用文字识别
 common_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic"
@@ -120,7 +148,6 @@ basic_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic"
 # 办公文档识别
 office_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/doc_analysis_office"
 
-request_url = basic_url
 # 二进制方式打开图片文件
 # 本地图片的地址 自行修改
 # local_path = 'D:\\PycharmProjects\\FlaskProjects\\test1.gif'
@@ -135,21 +162,8 @@ local_file_name = 'image.png'
 upload_file_name = 'upload.png'
 
 src = cv.imread(local_path + local_file_name)
-recognize_text2(src)
-
-f = open(local_path + upload_file_name, 'rb')
-img = base64.b64encode(f.read())
-
-params = {"image": img}
-request_url = request_url + "?access_token=" + access_token
-headers = {'content-type': 'application/x-www-form-urlencoded'}
-
-response = requests.post(request_url, data=params, headers=headers)
-if response.status_code == 200:
-    try:
-        result = response.json()['words_result']
-        print(result)
-        number = result[0]
-        print(number['words'])
-    except KeyError as e:
-        print(response.json()['error_msg'])
+# 处理图片
+recognize_text(src)
+# 请求结果
+result = request_img(basic_url, token, local_path + upload_file_name)
+print(result)

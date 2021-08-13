@@ -144,7 +144,65 @@
                     "score": 27
                 }
             ]
-        }
+        },
+        {
+            "title": "男性",
+            "list": [
+                {
+                    "id": 10000,
+                    "username": "user-0",
+                    "sex": "男",
+                    "city": "城市-0",
+                    "sign": "签名-0",
+                    "experience": 255,
+                    "logins": 24,
+                    "wealth": 82830700,
+                    "classify": "作家",
+                    "score": 57
+                },
+                {
+                    "id": 10001,
+                    "username": "user-1",
+                    "sex": "男",
+                    "city": "城市-1",
+                    "sign": "签名-1",
+                    "experience": 884,
+                    "logins": 58,
+                    "wealth": 64928690,
+                    "classify": "词人",
+                    "score": 27
+                }
+            ]
+        },
+        {
+            "title": "女性",
+            "list": [
+                {
+                    "id": 10003,
+                    "username": "user-0",
+                    "sex": "女",
+                    "city": "城市-0",
+                    "sign": "签名-0",
+                    "experience": 255,
+                    "logins": 24,
+                    "wealth": 82830700,
+                    "classify": "作家",
+                    "score": 57
+                },
+                {
+                    "id": 10004,
+                    "username": "user-1",
+                    "sex": "女",
+                    "city": "城市-1",
+                    "sign": "签名-1",
+                    "experience": 884,
+                    "logins": 58,
+                    "wealth": 64928690,
+                    "classify": "词人",
+                    "score": 27
+                }
+            ]
+        },
     ];
     //每个表格的elemId
     var elemIdList = [];
@@ -170,7 +228,7 @@
     layui.use('table', function () {
         //方法级渲染
         for (var i = 0; i < totalList.length; i++) {
-            tableRender2("#" + elemIdList[i], tableIdList[i], columns, totalList[i])
+            tableRender2("#" + elemIdList[i], tableIdList[i], totalList[i])
         }
     });
 
@@ -195,11 +253,11 @@
     }
 
     //表格渲染
-    function tableRender2(elemId, tableId, columns, item) {
+    function tableRender2(elemId, tableId, item) {
         table.render({
             elem: elemId
             , cols: [
-                [{title: item["title"], colspan: 10, align: 'center'},]
+                [{title: item["title"], colspan: 9, align: 'center'},]
                 , [
                     {field: 'id', title: 'ID', width: 80, sort: true, fixed: false}
                     , {field: 'username', title: '用户名', width: 80}

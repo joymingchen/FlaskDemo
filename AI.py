@@ -31,10 +31,10 @@ def iter_frames(im):
 def recognize_text(image):
     # 边缘保留滤波  去噪
     blur = cv.pyrMeanShiftFiltering(image, sp=8, sr=30)
-    # cv.imshow('dst', blur)
+    cv.imshow('dst', blur)
     # 对比度加深
     scale_abs = cv.convertScaleAbs(blur, alpha=1.4, beta=0)
-    # cv.imshow('abs', abs)
+    cv.imshow('abs', scale_abs)
 
     # 替换黄色
     hsv = cv.cvtColor(scale_abs, cv.COLOR_BGR2HSV)
@@ -66,20 +66,20 @@ def recognize_text(image):
     img_mask[mask_green != 0] = color_3
     img_mask[mask_yellow != 0] = color_4
 
-    # cv.imshow('img_mask', img_mask)
+    cv.imshow('img_mask', img_mask)
 
     # 灰度图像
     gray = cv.cvtColor(img_mask, cv.COLOR_BGR2GRAY)
-    # cv.imshow('gray', gray)
+    cv.imshow('gray', gray)
 
     # 自适应二值化
     local = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 25, 10)
-    # cv.imshow('local', local)
+    cv.imshow('local', local)
 
     # 二值化
     ret, binary = cv.threshold(local, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
     print(f'二值化自适应阈值：{ret}')
-    # cv.imshow('binary', binary)
+    cv.imshow('binary', binary)
     # # 形态学操作  获取结构元素  开操作
     # kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 2))
     # bin1 = cv.morphologyEx(binary, cv.MORPH_OPEN, kernel)
@@ -89,13 +89,15 @@ def recognize_text(image):
     # cv.imshow('bin2', bin2)
     # 逻辑运算  让背景为白色  字体为黑  便于识别
     cv.bitwise_not(binary, binary)
-    # cv.imshow('binary-image', binary)
+    cv.imshow('binary-image', binary)
     # 保存图片
     cv.imwrite(local_path + upload_file_name, binary)
     # # 识别
     # test_message = Image.fromarray(bin2)
     # text = pytesseract.image_to_string(test_message)
     # print(f'识别结果：{text}')
+    cv.waitKey(0)
+    cv.destroyAllWindows()
 
 
 # 获取百度AI的token
@@ -158,7 +160,7 @@ office_url = "https://aip.baidubce.com/rest/2.0/ocr/v1/doc_analysis_office"
 #     frame.save('image.png', **frame.info)
 
 local_path = 'D:\\PycharmProjects\\FlaskProjects\\'
-local_file_name = 'image.png'
+local_file_name = 'img.png'
 upload_file_name = 'upload.png'
 
 src = cv.imread(local_path + local_file_name)
